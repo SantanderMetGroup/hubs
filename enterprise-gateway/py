@@ -1,0 +1,5 @@
+FROM elyra/kernel-py:3.2.2
+
+RUN mamba install -y -n base xarray pandas matplotlib cartopy netcdf4 cftime dask iris zarr s3fs h5py gcsfs siphon seaborn \
+    nco cdo jupyter_contrib_nbextensions jupyter_nbextensions_configurator jupyter beautifulsoup4 git \
+    tensorflow keras
