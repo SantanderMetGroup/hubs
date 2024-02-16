@@ -24,7 +24,7 @@ RUN conda create -n climate4r && \
     source /opt/conda/bin/activate climate4r && \
     mamba install -y -n climate4r -c conda-forge -c r -c defaults -c santandermetgroup \
         r-climate4r=2.6.2 \
-        r-sf r-rgeos r-rgdal r-systemfonts r-terra r-lwgeom r-svglite r-satellite r-zip r-mapview r-dplyr r-shiny r-leafpop \
+        r-sf r-rgeos r-rgdal r-systemfonts r-terra r-lwgeom r-svglite r-satellite r-zip r-mapview r-dplyr r-shiny r-leafpop r-tidyverse \
         # python for bias correction, see https://github.com/SantanderMetGroup/downscaleR/tree/devel/inst/py
 	python numpy iris dask scipy pandas \
         nco cdo \
