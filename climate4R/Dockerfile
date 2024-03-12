@@ -1,9 +1,11 @@
 FROM jupyter/base-notebook:latest
 
 ARG ENVNAME=climate4r
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=Etc/UTC
 
 USER root
-RUN apt-get update && apt-get install -y xorg git wget && \
+RUN apt-get update && apt-get install -y xorg git wget build-essential tzdata && apt-get clean && \
     mkdir -p /gpfs/ces/share-7c11c2a4-9d9f-40f5-b95e-396bcbf3f608 /home/$NB_USER/shared /gpfs/projects/meteo/IPCC/ATLAS && \
     chown -R $NB_USER:users /gpfs /home/$NB_USER/shared && \
     chown -R jovyan:users /home/jovyan && \
@@ -43,7 +45,8 @@ RUN conda create -n cava && \
         r-leaflet r-htmltools r-furrr r-tidyverse r-sp r-png r-gridExtra \
         r-climate4R.indices r-rnaturalearth r-rnaturalearthdata r-leafsync \
         r-parallelly r-dtplyr r-mapview r-patchwork r-RColorBrewer r-glue \
-	'r-sf==1.0_14' r-rgeos r-rgdal r-systemfonts r-terra r-lwgeom r-svglite r-satellite r-zip r-mapview r-dplyr r-shiny r-leafpop \
+	#'r-sf==1.0_14' r-rgeos r-rgdal r-systemfonts r-terra r-lwgeom r-svglite r-satellite r-zip r-mapview r-dplyr r-shiny r-leafpop \
+	r-sf r-rgeos r-rgdal r-systemfonts r-terra r-lwgeom r-svglite r-satellite r-zip r-mapview r-dplyr r-shiny r-leafpop \
         r-plotly r-broom r-loadeR.2nc r-ggnewscale r-shiny r-geojsonio \
 	# 2023-05-11
 	r-future r-tidyr r-ggh4x r-reshape2 r-patchwork r-magrittr && \
@@ -61,3 +64,12 @@ COPY c4r-tf.yml c4r-tf.yml
 RUN mamba env create -n climate4tf --file c4r-tf.yml && \
     source /opt/conda/bin/activate climate4tf && \
     R --vanilla -e 'IRkernel::installspec(name = "climate4tf", displayname = "climate4R (deep)")'
+
+# SUNSET from BSC (https://earth.bsc.es/gitlab/es/sunset/-/tree/master)
+RUN git clone https://earth.bsc.es/gitlab/es/sunset.git && \
+    mamba env create -n SUNSET --file sunset/conda_installation/environment-sunset.yml -y && \
+    source /opt/conda/bin/activate SUNSET && \
+    mamba install -c conda-forge -y r-irkernel && \
+    R --vanilla -e "options(timeout = 600) ; install.packages('CSTools', repos='https://ftp.cixug.es/CRAN/')" && \
+    R --vanilla -e "options(timeout = 600) ; install.packages('CSIndicators', repos='https://ftp.cixug.es/CRAN/')" && \
+    R --vanilla -e 'IRkernel::installspec(name = "sunset", displayname = "SUNSET")'
