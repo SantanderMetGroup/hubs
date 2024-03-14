@@ -45,7 +45,7 @@ RUN conda create -n $R && \
         r-ggplot2 r-gridextra r-magrittr r-rcolorbrewer r-mclust \
         r-cluster r-kohonen r-gridExtra r-arules r-sp r-ncdf4 r-mclust r-caret \
 	# 2024-03-14
-	bioconductor-rgraphviz r-igraph r-arulesviz r-tidyverse r-bnlearn r-grain && \
+	bioconductor-rgraphviz r-igraph r-arulesviz r-tidyverse r-bnlearn r-grain bioconductor-rbgl && \
     R --vanilla -e 'IRkernel::installspec(name = "ir", displayname = "R")'
 
 ## climate4R
