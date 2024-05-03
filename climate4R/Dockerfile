@@ -26,7 +26,7 @@ RUN conda install mamba -y -n base -c conda-forge && \
 RUN conda create -n $ENVNAME && \
     source /opt/conda/bin/activate $ENVNAME && \
     mamba install -y -n $ENVNAME -c conda-forge -c r -c defaults -c santandermetgroup \
-        python=3.7.11 r-climate4r=2.5.3 \
+        r-climate4r \
         r-sf r-rgeos r-rgdal r-systemfonts r-terra r-lwgeom r-svglite r-satellite r-zip r-mapview r-dplyr r-shiny r-leafpop \
         nco cdo \
         jupyter_contrib_nbextensions jupyter_nbextensions_configurator r-irkernel && \
