@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y xorg git wget build-essential tzdata &&
 
 USER jovyan
 RUN conda install mamba -y -n base -c conda-forge && \
-    mamba install -y -n base xarray pandas matplotlib cartopy netcdf4 cftime dask iris zarr s3fs h5py gcsfs siphon beautifulsoup4 scikit-learn geopandas h5netcdf \
+    mamba install -y -n base xarray pandas matplotlib cartopy netcdf4 cftime dask iris zarr s3fs h5py gcsfs siphon beautifulsoup4 scikit-learn geopandas h5netcdf python-swiftclient \
     nco cdo cf-python cf-plot \
     #jupyter_contrib_nbextensions jupyter_nbextensions_configurator jupyter \
     # this tensorflow is for the climate4R + tensorflow environment
