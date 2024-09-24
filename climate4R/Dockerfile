@@ -1,6 +1,5 @@
 FROM jupyter/base-notebook:latest
 
-ARG ENVNAME=climate4r
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=Etc/UTC
 
@@ -14,23 +13,28 @@ RUN apt-get update && apt-get install -y xorg git wget build-essential tzdata &&
 
 USER jovyan
 RUN conda install mamba -y -n base -c conda-forge && \
-    mamba install -y -n base jupyter xarray pandas matplotlib cartopy netcdf4 cftime dask iris zarr s3fs h5py gcsfs siphon beautifulsoup4 scikit-learn geopandas h5netcdf python-swiftclient \
-    nco cdo cf-python cf-plot \
-    #jupyter_contrib_nbextensions jupyter_nbextensions_configurator jupyter \
-    # this tensorflow is for the climate4R + tensorflow environment
-    # installed here due to reticulate looking for python in the default env
+    # https://github.com/proxystore/taps/issues/151#issuecomment-2340406425 \
+    mamba install -y -n base jupyter 'libsqlite<3.46' \
+    # this tensorflow is for the climate4R + tensorflow environment, installed here due to reticulate looking for python in the default env
     tensorflow keras
+
+# python environment with xarray etc
+RUN conda create -n xarray && \
+    source /opt/conda/bin/activate xarray && \
+    mamba install -y jupyter xarray pandas matplotlib cartopy netcdf4 cftime dask iris zarr s3fs h5py gcsfs siphon beautifulsoup4 scikit-learn geopandas h5netcdf python-swiftclient \
+    nco cdo cf-python cf-plot && \
+    python -m ipykernel install --name xarray --display-name "xarray" --prefix /opt/conda
 
 # generic environment for climate4R
 # r-climate4r requires python=3.7.11
-RUN conda create -n $ENVNAME && \
-    source /opt/conda/bin/activate $ENVNAME && \
-    mamba install -y -n $ENVNAME -c conda-forge -c r -c defaults -c santandermetgroup \
+RUN conda create -n climate4r && \
+    source /opt/conda/bin/activate climate4r && \
+    mamba install -y -n climate4r -c conda-forge -c r -c defaults -c santandermetgroup \
         r-climate4r jupyter \
         r-sf r-rgeos r-rgdal r-systemfonts r-terra r-lwgeom r-svglite r-satellite r-zip r-mapview r-dplyr r-shiny r-leafpop \
         nco cdo \
         jupyter_contrib_nbextensions jupyter_nbextensions_configurator r-irkernel && \
-    R --vanilla -e 'IRkernel::installspec(name = "climate4r", displayname = "climate4R", user = FALSE)'
+    R --vanilla -e 'IRkernel::installspec(name = "climate4r", displayname = "climate4R", user = FALSE, prefix="/opt/conda")'
 
 # create conda env for FAO due to custom packages
 # oceanis for FAO users requires: r-sf r-systemfonts r-terra r-lwgeom r-svglite r-satellite r-zip r-mapview r-dplyr r-shiny r-leafpop
@@ -55,7 +59,7 @@ RUN conda create -n cava && \
     R --vanilla -e 'install.packages("stxplore", repos="http://cran.us.r-project.org")' && \
     R --vanilla -e 'library(devtools); devtools::install_github("ropensci/rnaturalearthhires")' && \
     R --vanilla -e 'library(devtools); devtools::install_github("Risk-Team/CAVAanalytics", dependencies=FALSE)' && \
-    R --vanilla -e 'IRkernel::installspec(name = "cava", displayname = "CAVA Analytics", user = FALSE)'
+    R --vanilla -e 'IRkernel::installspec(name = "cava", displayname = "CAVA Analytics", user = FALSE, prefix="/opt/conda")'
 
 ## climate4R + tensorflow for deep learning
 #COPY c4r-tf.yml c4r-tf.yml
@@ -78,4 +82,5 @@ RUN conda create -n pyAEZ && \
     source /opt/conda/bin/activate pyAEZ && \
     mamba clean --all -y && \
     mamba install -y -c conda-forge jupyter pyAEZ ipykernel && \
-    python -m ipykernel install --name pyAEZ --display-name "pyAEZ" --prefix /opt/conda/envs/pyAEZ
+    python -m ipykernel install --name pyAEZ --display-name "pyAEZ" --prefix /opt/conda
+
