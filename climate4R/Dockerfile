@@ -18,10 +18,17 @@ RUN conda install mamba -y -n base -c conda-forge && \
     # this tensorflow is for the climate4R + tensorflow environment, installed here due to reticulate looking for python in the default env
     tensorflow keras
 
-# python environment with xarray etc
+## python environment with xarray etc
+#RUN conda create -n xarray && \
+#    source /opt/conda/bin/activate xarray && \
+#    mamba install -y jupyter xarray pandas matplotlib cartopy netcdf4 cftime dask iris zarr s3fs h5py gcsfs siphon beautifulsoup4 scikit-learn geopandas h5netcdf python-swiftclient \
+#    nco cdo cf-python cf-plot && \
+#    python -m ipykernel install --name xarray --display-name "xarray" --prefix /opt/conda
+
+# python environment with netcdf 4.8 etc
 RUN conda create -n xarray && \
     source /opt/conda/bin/activate xarray && \
-    mamba install -y jupyter xarray pandas matplotlib cartopy netcdf4 cftime dask iris zarr s3fs h5py gcsfs siphon beautifulsoup4 scikit-learn geopandas h5netcdf python-swiftclient \
+    mamba install -y 'libnetcdf<4.9' jupyter xarray pandas matplotlib cartopy netcdf4 cftime dask iris zarr s3fs h5py gcsfs siphon beautifulsoup4 scikit-learn geopandas h5netcdf python-swiftclient \
     nco cdo cf-python cf-plot && \
     python -m ipykernel install --name xarray --display-name "xarray" --prefix /opt/conda
 
