@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y xorg git wget build-essential tzdata &&
 USER jovyan
 RUN conda install mamba -y -n base -c conda-forge && \
     # https://github.com/proxystore/taps/issues/151#issuecomment-2340406425 \
-    mamba install -y -n base jupyter 'libsqlite<3.46' \
+    mamba install -y -n base jupyter 'libsqlite<3.46' nbgitpuller \
     # this tensorflow is for the climate4R + tensorflow environment, installed here due to reticulate looking for python in the default env
     tensorflow keras
 
