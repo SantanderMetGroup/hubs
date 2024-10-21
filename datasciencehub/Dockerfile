@@ -30,7 +30,7 @@ USER $NB_USER
 RUN conda install mamba -y -n base -c conda-forge && \
     source /opt/conda/bin/activate base && \
     CONDA_OVERRIDE_CUDA=11.2 mamba install -y -n base -c conda-forge -c r -c defaults \
-        xarray h5py netCDF4 pandas matplotlib zarr s3fs keras beautifulsoup4 cdo nco pip \
+        xarray h5py netCDF4 pandas matplotlib zarr s3fs keras beautifulsoup4 cdo nco pip nbgitpuller \
         # this tensorflow is for the climate4R + tensorflow environment
         # installed here due to reticulate looking for python in the default env
         tensorflow
