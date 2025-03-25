@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y xorg git wget build-essential tzdata &&
 USER jovyan
 RUN conda install mamba -y -n base -c conda-forge && \
     # https://github.com/proxystore/taps/issues/151#issuecomment-2340406425 \
-    mamba install -y -n base jupyter 'libsqlite<3.46' nbgitpuller \
+    mamba install -y -n base jupyter 'libsqlite<3.46' nbgitpuller jupyterhub-idle-culler jupyterlab-git \
     # this tensorflow is for the climate4R + tensorflow environment, installed here due to reticulate looking for python in the default env
     tensorflow keras
 
@@ -39,6 +39,7 @@ RUN conda create -n climate4r && \
     mamba install -y -n climate4r -c conda-forge -c r -c defaults -c santandermetgroup \
         r-climate4r jupyter \
         r-sf r-rgeos r-rgdal r-systemfonts r-terra r-lwgeom r-svglite r-satellite r-zip r-mapview r-dplyr r-shiny r-leafpop \
+        r-curl r-httr \
         nco cdo \
         jupyter_contrib_nbextensions jupyter_nbextensions_configurator r-irkernel && \
     R --vanilla -e 'IRkernel::installspec(name = "climate4r", displayname = "climate4R", user = FALSE, prefix="/opt/conda")'
@@ -68,13 +69,6 @@ RUN conda create -n cava && \
     R --vanilla -e 'library(devtools); devtools::install_github("Risk-Team/CAVAanalytics", dependencies=FALSE)' && \
     R --vanilla -e 'IRkernel::installspec(name = "cava", displayname = "CAVA Analytics", user = FALSE, prefix="/opt/conda")'
 
-## climate4R + tensorflow for deep learning
-#COPY c4r-tf.yml c4r-tf.yml
-#RUN mamba env create -n climate4tf --file c4r-tf.yml && \
-#    source /opt/conda/bin/activate climate4tf && \
-#    mamba install -y -c conda-forge -c r -c santandermetgroup jupyter && \
-#    R --vanilla -e 'IRkernel::installspec(name = "climate4tf", displayname = "climate4R (deep)", user = FALSE)'
-
 ## SUNSET from BSC (https://earth.bsc.es/gitlab/es/sunset/-/tree/master)
 #RUN git clone https://earth.bsc.es/gitlab/es/sunset.git && \
 #    mamba env create -n SUNSET --file sunset/conda_installation/environment-sunset.yml -y && \
@@ -91,3 +85,10 @@ RUN conda create -n pyAEZ && \
     mamba install -y -c conda-forge jupyter pyAEZ ipykernel && \
     python -m ipykernel install --name pyAEZ --display-name "pyAEZ" --prefix /opt/conda
 
+
+# climate4R + tensorflow for deep learning
+COPY c4r-tf.yml c4r-tf.yml
+RUN mamba env create -n climate4tf --file c4r-tf.yml && \
+    source /opt/conda/bin/activate climate4tf && \
+    mamba install -y -c conda-forge -c r -c santandermetgroup jupyter && \
+    R --vanilla -e 'IRkernel::installspec(name = "climate4tf", displayname = "climate4R (deep)", user = FALSE)'
